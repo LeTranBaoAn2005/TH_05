@@ -1,71 +1,114 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Date Validator</title>
+    <title>Công Cụ Kiểm Tra Ngày Tháng</title>
     <style>
-        .check {
-            padding: 5px;
-            margin-left: 10px;
-        }
-        .error {
-            background-color: red;
+        .loi {
+            background-color: #ff4444;
             color: white;
         }
-        .success {
-            background-color: green;
+        .hop-le {
+            background-color: #00C851;
+            color: white;
+        }
+        .canh-bao {
+            background-color: #ffbb33;
+            color: white;
+        }
+        .thong-tin {
+            background-color: #33b5e5;
             color: white;
         }
     </style>
 </head>
 <body>
-    <input type="text" id="date" placeholder="DD/MM/YYYY">
-    <button id="but">Xac nhan</button>
-    <span id="check" class="check"></span>
+    <h2>Kiểm Tra Ngày Tháng</h2>
+    <div>
+        <input type="text" id="ngayNhap" placeholder="Nhập ngày (DD/MM/YYYY)">
+        <button id="nutKiemTra">Kiểm Tra</button>
+        <span id="hienThiKetQua" class="ketqua"></span>
+    </div>
 
     <script>
-        var date = document.getElementById("date");
-        var but = document.getElementById("but");
-        var check = document.getElementById("check");
+        const oNhapNgay = document.getElementById("ngayNhap");
+        const nutKiemTra = document.getElementById("nutKiemTra");
+        const hienThiKetQua = document.getElementById("hienThiKetQua");
 
-        function isValidDate(day, month, year) {
-            var d = new Date(year, month - 1, day);
-            
-            return d.getFullYear() == year && 
-                   d.getMonth() == month - 1 && 
-                   d.getDate() == day;
+        function kiemTraNgay(ngayNhap) {
+            const dinhDang = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            if (!dinhDang.test(ngayNhap)) {
+                return { hopLe: false, thongBao: "Sai định dạng! Vui lòng nhập theo DD/MM/YYYY" };
+            }
+
+            const [, ngayStr, thangStr, namStr] = dinhDang.exec(ngayNhap);
+            const ngay = parseInt(ngayStr, 10);
+            const thang = parseInt(thangStr, 10);
+            const nam = parseInt(namStr, 10);
+            if (isNaN(ngay) || isNaN(thang) || isNaN(nam)) {
+                return { hopLe: false, thongBao: "Giá trị số không hợp lệ" };
+            }
+
+            if (thang < 1 || thang > 12) {
+                return { hopLe: false, thongBao: "Tháng phải từ 01 đến 12" };
+            }
+            const doiTuongNgay = new Date(nam, thang - 1, ngay);
+            if (doiTuongNgay.getFullYear() !== nam || 
+                doiTuongNgay.getMonth() !== thang - 1 || 
+                doiTuongNgay.getDate() !== ngay) {
+                return { hopLe: false, thongBao: "Ngày không tồn tại trong lịch" };
+            }
+
+            const homNay = new Date();
+            homNay.setHours(0, 0, 0, 0);
+
+            let soSanh = "";
+            if (doiTuongNgay < homNay) {
+                soSanh = " (đã qua)";
+            } else if (doiTuongNgay > homNay) {
+                soSanh = " (tương lai)";
+            } else {
+                soSanh = " (hôm nay)";
+            }
+
+            return { 
+                hopLe: true, 
+                thongBao: "Ngày hợp lệ: " + ngayNhap + soSanh,
+                doiTuongNgay: doiTuongNgay
+            };
         }
 
-        function sosanh() {
-            var pattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
-            var inputdate = date.value.trim();
+        function thucHienKiemTra() {
+            const giaTriNhap = oNhapNgay.value.trim();
             
-            if (inputdate === '') {
-                check.innerText = "Please input DD/MM/YYYY";
-                check.className = "check error";
-            } 
-            else if (!pattern.test(inputdate)) {
-                check.innerText = "Error format, please input DD/MM/YYYY";
-                check.className = "check error";
+            if (giaTriNhap === '') {
+                hienThiKetQua.textContent = "Vui lòng nhập ngày cần kiểm tra";
+                hienThiKetQua.className = "ketqua loi";
+                return;
             }
-            else {
-                var matches = inputdate.match(pattern);
-                var day = parseInt(matches[1], 10);
-                var month = parseInt(matches[2], 10);
-                var year = parseInt(matches[3], 10);
+
+            const ketQua = kiemTraNgay(giaTriNhap);
+            
+            if (ketQua.hopLe) {
+                hienThiKetQua.textContent = ketQua.thongBao;
+                hienThiKetQua.className = "ketqua hop-le";
                 
-                if (isValidDate(day, month, year)) {
-                    check.innerText = "Valid date: " + inputdate;
-                    check.className = "check success";
-                } else {
-                    check.innerText = "Invalid date (e.g., 30/02 is invalid)";
-                    check.className = "check error";
-                }
+                console.log("Thông tin chi tiết:");
+                console.log("- Năm:", ketQua.doiTuongNgay.getFullYear());
+                console.log("- Tháng:", ketQua.doiTuongNgay.getMonth() + 1);
+                console.log("- Ngày:", ketQua.doiTuongNgay.getDate());
+                console.log("- Thứ trong tuần:", ketQua.doiTuongNgay.getDay());
+            } else {
+                hienThiKetQua.textContent = ketQua.thongBao;
+                hienThiKetQua.className = "ketqua loi";
             }
         }
 
-        but.onclick = sosanh;
+        nutKiemTra.addEventListener('click', thucHienKiemTra);
+        oNhapNgay.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') thucHienKiemTra();
+        });
     </script>
 </body>
 </html>
