@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Date Validator</title>
+    <style>
+        .check {
+            padding: 5px;
+            margin-left: 10px;
+        }
+        .error {
+            background-color: red;
+            color: white;
+        }
+        .success {
+            background-color: green;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <input type="text" id="date" placeholder="DD/MM/YYYY">
+    <button id="but">Xac nhan</button>
+    <span id="check" class="check"></span>
+
+    <script>
+        var date = document.getElementById("date");
+        var but = document.getElementById("but");
+        var check = document.getElementById("check");
+
+        function isValidDate(day, month, year) {
+            var d = new Date(year, month - 1, day);
+            
+            return d.getFullYear() == year && 
+                   d.getMonth() == month - 1 && 
+                   d.getDate() == day;
+        }
+
+        function sosanh() {
+            var pattern = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            var inputdate = date.value.trim();
+            
+            if (inputdate === '') {
+                check.innerText = "Please input DD/MM/YYYY";
+                check.className = "check error";
+            } 
+            else if (!pattern.test(inputdate)) {
+                check.innerText = "Error format, please input DD/MM/YYYY";
+                check.className = "check error";
+            }
+            else {
+                var matches = inputdate.match(pattern);
+                var day = parseInt(matches[1], 10);
+                var month = parseInt(matches[2], 10);
+                var year = parseInt(matches[3], 10);
+                
+                if (isValidDate(day, month, year)) {
+                    check.innerText = "Valid date: " + inputdate;
+                    check.className = "check success";
+                } else {
+                    check.innerText = "Invalid date (e.g., 30/02 is invalid)";
+                    check.className = "check error";
+                }
+            }
+        }
+
+        but.onclick = sosanh;
+    </script>
+</body>
+</html>
