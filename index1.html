@@ -32,20 +32,20 @@
     </div>
 
     <script>
-        const oNhapNgay = document.getElementById("ngayNhap");
-        const nutKiemTra = document.getElementById("nutKiemTra");
-        const hienThiKetQua = document.getElementById("hienThiKetQua");
+        var oNhapNgay = document.getElementById("ngayNhap");
+        var nutKiemTra = document.getElementById("nutKiemTra");
+        var hienThiKetQua = document.getElementById("hienThiKetQua");
 
         function kiemTraNgay(ngayNhap) {
-            const dinhDang = /^(\d{2})\/(\d{2})\/(\d{4})$/;
+            var dinhDang = /^(\d{2})\/(\d{2})\/(\d{4})$/;
             if (!dinhDang.test(ngayNhap)) {
                 return { hopLe: false, thongBao: "Sai định dạng! Vui lòng nhập theo DD/MM/YYYY" };
             }
 
-            const [, ngayStr, thangStr, namStr] = dinhDang.exec(ngayNhap);
-            const ngay = parseInt(ngayStr, 10);
-            const thang = parseInt(thangStr, 10);
-            const nam = parseInt(namStr, 10);
+            var [, ngayStr, thangStr, namStr] = dinhDang.exec(ngayNhap);
+            var ngay = parseInt(ngayStr, 10);
+            var thang = parseInt(thangStr, 10);
+            var nam = parseInt(namStr, 10);
             if (isNaN(ngay) || isNaN(thang) || isNaN(nam)) {
                 return { hopLe: false, thongBao: "Giá trị số không hợp lệ" };
             }
@@ -53,14 +53,14 @@
             if (thang < 1 || thang > 12) {
                 return { hopLe: false, thongBao: "Tháng phải từ 01 đến 12" };
             }
-            const doiTuongNgay = new Date(nam, thang - 1, ngay);
+            var doiTuongNgay = new Date(nam, thang - 1, ngay);
             if (doiTuongNgay.getFullYear() !== nam || 
                 doiTuongNgay.getMonth() !== thang - 1 || 
                 doiTuongNgay.getDate() !== ngay) {
                 return { hopLe: false, thongBao: "Ngày không tồn tại trong lịch" };
             }
 
-            const homNay = new Date();
+            var homNay = new Date();
             homNay.setHours(0, 0, 0, 0);
 
             let soSanh = "";
@@ -80,7 +80,7 @@
         }
 
         function thucHienKiemTra() {
-            const giaTriNhap = oNhapNgay.value.trim();
+            var giaTriNhap = oNhapNgay.value.trim();
             
             if (giaTriNhap === '') {
                 hienThiKetQua.textContent = "Vui lòng nhập ngày cần kiểm tra";
@@ -88,7 +88,7 @@
                 return;
             }
 
-            const ketQua = kiemTraNgay(giaTriNhap);
+            var ketQua = kiemTraNgay(giaTriNhap);
             
             if (ketQua.hopLe) {
                 hienThiKetQua.textContent = ketQua.thongBao;
