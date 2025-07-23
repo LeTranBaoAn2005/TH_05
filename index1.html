@@ -36,6 +36,20 @@
         var nutKiemTra = document.getElementById("nutKiemTra");
         var hienThiKetQua = document.getElementById("hienThiKetQua");
 
+        function tinhTuoi(ngaySinh) {
+            var homNay = new Date();
+            homNay.setHours(0, 0, 0, 0);
+            
+            var tuoi = homNay.getFullYear() - ngaySinh.getFullYear();
+            var thang = homNay.getMonth() - ngaySinh.getMonth();
+            
+            if (thang < 0 || (thang === 0 && homNay.getDate() < ngaySinh.getDate())) {
+                tuoi--;
+            }
+            
+            return tuoi;
+        }
+
         function kiemTraNgay(ngayNhap) {
             var dinhDang = /^(\d{2})\/(\d{2})\/(\d{4})$/;
             if (!dinhDang.test(ngayNhap)) {
@@ -91,14 +105,34 @@
             var ketQua = kiemTraNgay(giaTriNhap);
             
             if (ketQua.hopLe) {
-                hienThiKetQua.textContent = ketQua.thongBao;
-                hienThiKetQua.className = "ketqua hop-le";
+                var tuoi = tinhTuoi(ketQua.doiTuongNgay);
+                
+                if (tuoi < 18) {
+                    hienThiKetQua.textContent = `Bạn mới ${tuoi} tuổi. Chỉ chấp nhận từ 18 tuổi trở lên.`;
+                    hienThiKetQua.className = "ketqua canh-bao";
+                    return;
+                }
+                
+                var homNay = new Date();
+                homNay.setHours(0, 0, 0, 0);
+                
+                if (ketQua.doiTuongNgay < homNay) {
+                    hienThiKetQua.textContent = `Ngày hợp lệ. Bạn ${tuoi} tuổi.`;
+                    hienThiKetQua.className = "ketqua hop-le";
+                } else if (ketQua.doiTuongNgay > homNay) {
+                    hienThiKetQua.textContent = `Ngày hợp lệ (tương lai). Bạn sẽ ${tuoi} tuổi vào năm nay.`;
+                    hienThiKetQua.className = "ketqua thong-tin";
+                } else {
+                    hienThiKetQua.textContent = "Chính là hôm nay!";
+                    hienThiKetQua.className = "ketqua hop-le";
+                }
                 
                 console.log("Thông tin chi tiết:");
                 console.log("- Năm:", ketQua.doiTuongNgay.getFullYear());
                 console.log("- Tháng:", ketQua.doiTuongNgay.getMonth() + 1);
                 console.log("- Ngày:", ketQua.doiTuongNgay.getDate());
                 console.log("- Thứ trong tuần:", ketQua.doiTuongNgay.getDay());
+                console.log("- Tuổi tính được:", tuoi);
             } else {
                 hienThiKetQua.textContent = ketQua.thongBao;
                 hienThiKetQua.className = "ketqua loi";
